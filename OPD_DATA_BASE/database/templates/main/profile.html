@@ -1,86 +1,67 @@
 {% extends 'main/base.html' %}
-
 {% load static %}
 
-{% block title %}
-Профиль
-{% endblock %}
+{% block title %}Профиль{% endblock %}
 
 {% block additional_head %}
-    <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/profile.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
 {% endblock %}
 
 {% block content %}
 {% if object.is_active %}
-<h1 class="info">{{ object.fullname }}</h1>
-<p class="info">Почта: {{ object.email }}</p>
-<p class="info">Права:
-{% if object.role == 1 %}
-    Читатель
-  {% elif object.role == 2 %}
-    Автор
-  {% elif object.role == 3 %}
-    Админ
-  {% endif %}
-</p>
-<p class="info">Дата регистрации: {{ object.date_joined|date }}</p>
-{% if object.id == user.id or user.role == 3 %}
-<a href="/profile/{{ object.id }}/update">
-    <button type="button" class="btn btn-primary button-redacc">Редактировать аккаунт</button></a>
-{% endif %}
+    <h1 class="info">{{ object.fullname }}</h1>
+    <p class="info">Почта: {{ object.email }}</p>
+    <p class="info">Права: {% if object.role == 1 %}Читатель{% elif object.role == 2 %}Автор{% elif object.role == 3 %}Админ{% endif %}</p>
+    <p class="info">Дата регистрации: {{ object.date_joined|date }}</p>
 
-<div class="album py-5 profile-article">
-    <div class="container container-profile">
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            {% for article in articles %}
-            {% if article.is_active or article.author.id == user.id %}
-            <div class="col">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <p class="card-text">{{ article.title }}</p>
-                        <div>
-                            <div class="d-block mb-2">
-                                <a href="/library/{{ article.slug }}">
-                                <button type="button"
-                                        class="btn btn-sm btn-primary">
-                                    <span>Скачать</span>
-                                </button></a>
-                                {% if user.id == article.author.id or user.role == 3 %}
-                                <a href="/library/{{ article.slug }}/update">
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-secondary">
-                                    Редактировать
-                                </button></a>
-                                <a href="/library/{{ article.slug }}/delete">
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-secondary">
-                                    Удалить
-                                </button></a>
-                                {% endif %}
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <a href="/profile/{{ article.author.id }}">
-                                <small class="text-body-secondary">
-                                    {{ article.author.fullname }}</small></a>
-                                <small class="text-body-secondary" title="Количество скачиваний">
-                                    Cкачиваний: {{ article.downloads }}</small>
-                                <small class="text-body-secondary" title="Количество просмотров">
-                                    Просмотров: {{ article.views }}</small>
+    {% if object.id == user.id or user.role == 3 %}
+        <a href="/profile/{{ object.id }}/update">
+            <button type="button" class="btn btn-primary button-redacc">Редактировать аккаунт</button>
+        </a>
+    {% endif %}
+
+    <div class="album py-5 profile-article">
+        <div class="container container-profile">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                {% for article in articles %}
+                    {% if article.is_active or article.author.id == user.id %}
+                        <div class="col">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <p class="card-text">{{ article.title }}</p>
+                                    <div class="d-block mb-2">
+                                        <a href="/library/{{ article.slug }}">
+                                            <button type="button" class="btn btn-sm btn-primary">Скачать</button>
+                                        </a>
+                                        {% if user.id == article.author.id or user.role == 3 %}
+                                            <a href="/library/{{ article.slug }}/update">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary">Редактировать</button>
+                                            </a>
+                                            <a href="/library/{{ article.slug }}/delete">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary">Удалить</button>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <a href="/profile/{{ article.author.id }}">
+                                            <small class="text-body-secondary">{{ article.author.fullname }}</small>
+                                        </a>
+                                        <small class="text-body-secondary" title="Количество скачиваний">Скачиваний: {{ article.downloads }}</small>
+                                        <small class="text-body-secondary" title="Количество просмотров">Просмотров: {{ article.views }}</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    {% endif %}
+                {% empty %}
+                    <h1>Пока здесь пусто...</h1>
+                {% endfor %}
             </div>
-            {% endif %}
-            {% empty %}
-            <h1>Пока здесь пусто...</h1>
-            {% endfor %}
         </div>
     </div>
-</div>
 
 {% else %}
-<h1>Аккаунт удалён или заблокирован</h1>
+    <h1>Аккаунт удалён или заблокирован</h1>
 {% endif %}
 {% endblock %}

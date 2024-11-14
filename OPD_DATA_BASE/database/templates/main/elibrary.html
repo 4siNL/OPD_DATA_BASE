@@ -1,20 +1,15 @@
 {% extends 'main/base.html' %}
-
 {% load static %}
 
-
-{% block title %}
-Библиотека
-{% endblock %}
+{% block title %}Библиотека{% endblock %}
 
 {% block additional_head %}
-    <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
-    <link rel="stylesheet" href="{% static 'css/elibrary.css' %}" type="text/css"
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/elibrary.css' %}">
 {% endblock %}
 
 {% block content %}
 <h1 class="page-title">Библиотека</h1>
-
 <p class="page-title">
     Искать статьи можно по названию, аннотации, ключевым словам, дате загрузки и автору.
     Если вы планируете искать сразу по нескольким параметрам или по нескольким ключевым словам, то используйте запятые для разделения.
@@ -22,99 +17,73 @@
 
 <form method="GET" action="{% url 'library' %}" class="page-title search-form">
     <input type="text" name="query" placeholder="Поиск..." value="{{ request.GET.query }}" class="search-line">
-    <div id="keywords_input" style="display: {% if request.GET.keywords_block %}block{% else %}none{% endif %};">
+    <div id="keywords_input" style="display: {{ request.GET.keywords_block|yesno:'block,none' }};">
         <input type="text" name="keywords" placeholder="Ключевые слова через запятую" value="{{ request.GET.keywords }}">
     </div>
-    <label>
-        <input type="checkbox" id="keywords_checkbox" name="keywords_block" {% if request.GET.keywords_block %}checked{% endif %}>
-        Обязательные ключевые слова
-    </label>
-    <label>
-        <input type="checkbox" name="all_terms" {% if request.GET.all_terms %}checked{% endif %}>
-        Более точный запрос
-    </label>
+    <label><input type="checkbox" id="keywords_checkbox" name="keywords_block" {{ request.GET.keywords_block|yesno:'checked,' }}> Обязательные ключевые слова</label>
+    <label><input type="checkbox" name="all_terms" {{ request.GET.all_terms|yesno:'checked,' }}> Более точный запрос</label>
     <button type="submit">Поиск</button>
 </form>
 
 <script>
     document.getElementById('keywords_checkbox').addEventListener('change', function() {
-        var keywordsInput = document.getElementById('keywords_input');
-        if (this.checked) {
-            keywordsInput.style.display = 'block';
-        } else {
-            keywordsInput.style.display = 'none';
-        }
+        document.getElementById('keywords_input').style.display = this.checked ? 'block' : 'none';
     });
 </script>
 
 <div class="album py-5">
     <div class="container elibrary_container">
-
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
             {% for article in article_list %}
-            {% if article.author.is_active %}
-            <div class="col">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <p class="card-text">{{ article.title }}</p>
-                        <div>
-                            <div class="d-block mb-2">
-                                <a href="/library/{{ article.slug }}">
-                                <button type="button"
-                                        class="btn btn-sm btn-primary">
-                                    <span>Скачать</span>
-                                </button></a>
-                                {% if user.id == article.author.id or user.role == 3 %}
-                                <a href="/library/{{ article.slug }}/update">
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-secondary">
-                                    Редактировать
-                                </button></a>
-                                <a href="/library/{{ article.slug }}/delete">
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-secondary">
-                                    Удалить
-                                </button></a>
-                                {% endif %}
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mt-2">
-                                <a href="/profile/{{ article.author.id }}">
-                                <small class="text-body-secondary">
-                                    {{ article.author.fullname }}</small></a>
-                                <small class="text-body-secondary" title="Количество скачиваний">
-                                    Cкачиваний: {{ article.downloads }}</small>
-                                <small class="text-body-secondary" title="Количество просмотров">
-                                    Просмотров: {{ article.views }}</small>
+                {% if article.author.is_active %}
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <p class="card-text">{{ article.title }}</p>
+                                <div>
+                                    <div class="d-block mb-2">
+                                        <a href="/library/{{ article.slug }}">
+                                            <button type="button" class="btn btn-sm btn-primary">Скачать</button>
+                                        </a>
+                                        {% if user.id == article.author.id or user.role == 3 %}
+                                            <a href="/library/{{ article.slug }}/update">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary">Редактировать</button>
+                                            </a>
+                                            <a href="/library/{{ article.slug }}/delete">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary">Удалить</button>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <a href="/profile/{{ article.author.id }}">
+                                            <small class="text-body-secondary">{{ article.author.fullname }}</small>
+                                        </a>
+                                        <small class="text-body-secondary" title="Количество скачиваний">Скачиваний: {{ article.downloads }}</small>
+                                        <small class="text-body-secondary" title="Количество просмотров">Просмотров: {{ article.views }}</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            {% endif %}
+                {% endif %}
             {% empty %}
-            <h1>Пока здесь пусто...</h1>
+                <h1>Пока здесь пусто...</h1>
             {% endfor %}
-
         </div>
     </div>
 </div>
+
 <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
             <a href="?page=1">&laquo; первая</a>
             <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
         {% endif %}
-
-        <span class="current">
-            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
-        </span>
-
+        <span class="current">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
             <a href="?page={{ page_obj.next_page_number }}">следующая</a>
             <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
         {% endif %}
     </span>
 </div>
-
-
 {% endblock %}
