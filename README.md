@@ -1,11 +1,35 @@
-pip install -r requirements.txt
+## OPD_DATA_BASE
 
-cd OPD_DATA_BASE
+### Описание
+**OPD_DATA_BASE** — проект, предназначенный для управления базой данных электронной библиотеки.
 
-python manage.py makemigrations
+### Основной функционал
+1. **Регистрация и аутентификация пользователей, роли доступа** — возможность создания и управления аккаунтами, а также роли доступа для читателей, авторов и администраторов.
+2. **CRUD-операции с данными** — добавление, редактирование, удаление и получение данных (аккаунты, статьи) через веб-интерфейс.
+3. **Улучшенный интерфейс администрирования** — для централизованного управления пользователями, данными и для одобрения статей.
 
-python manage.py migrate
+### Установка и запуск
+1. **Клонирование репозитория**:
+   ```bash
+   git clone https://github.com/4siNL/OPD_DATA_BASE.git
+   ```
+2. **Установка зависимостей**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. **Первый запуск**:
+   ```bash
+   cd OPD_DATA_BASE
+   python manage.py makemigrations
+   python manage.py migrate
+   python manage.py collectstatic
+   python manage.py runserver
+   ```
+4. **Последующие запуски**:
+   ```bash
+   python manage.py runserver
+   ```
 
-python manage.py collectstatic
-
-python manage.py runserver
+### Технологии
+- **Python 3.11**, **Django 5.0.4**, **SQLite 3** для серверной части.
+- **HTML/CSS** для пользовательского интерфейса.
